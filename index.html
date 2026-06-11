@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matchbook · Culture Command Center</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Mulish:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+:root{
+  --spark-red:#E21C24; --spark-red-press:#B5151A; --ember:#C8161D;
+  --dream-yellow:#F9DC7C; --gold:#F7B23C;
+  --ink:#1A1A1A; --charcoal:#232323; --slate:#4A4A4A; --muted:#8A8A8A;
+  --hairline:#E4E2DE; --paper:#F6F6F4; --cloud:#EDEDEB; --white:#FFFFFF;
+  --ok:#1F8A4D; --ok-bg:#E9F3EC; --ok-line:#C3E0CD;
+  --warn:#B07A12; --warn-bg:#FBF1D8; --warn-line:#EAD49A;
+  --need:#E21C24; --need-bg:#FBEAEA; --need-line:#F2C6C6;
+  --info:#1F6FB2; --info-bg:#E8F1F8; --info-line:#C2D9EC;
+  --na:#8A8A8A; --na-bg:#EDEDEB; --na-line:#DDDBD7;
+  --font-display:'Anton','Arial Narrow',sans-serif;
+  --font-cond:'Oswald','Arial Narrow',sans-serif;
+  --font-body:'Mulish',system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --shadow-sm:0 1px 2px rgba(26,26,26,.06),0 2px 6px rgba(26,26,26,.06);
+  --shadow-md:0 8px 24px rgba(26,26,26,.10),0 2px 6px rgba(26,26,26,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1480px;margin:0 auto;padding:24px 26px 70px}
+.masthead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:16px;border-bottom:3px solid var(--ink);flex-wrap:wrap}
+.lockup{display:flex;align-items:center;gap:16px}
+.flame{width:46px;height:54px;flex:none}
+.kicker{font-family:var(--font-cond);font-weight:600;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--spark-red);margin-bottom:4px}
+h1{font-family:var(--font-display);font-weight:400;font-size:34px;line-height:.95;text-transform:uppercase;letter-spacing:.005em}
+h1 .red{color:var(--spark-red)}
+.meta{font-size:12.5px;color:var(--muted);max-width:380px;text-align:right;line-height:1.5}
+.meta b{color:var(--slate)}
+.topnav{display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:10px 0;border-bottom:1px solid var(--hairline);margin-bottom:20px}
+.topnav a{font-family:var(--font-cond);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);text-decoration:none;padding:6px 14px;border-radius:999px;transition:all .15s var(--ease)}
+.topnav a:hover{color:var(--ink);background:var(--cloud)}
+.topnav a.active{background:var(--ink);color:var(--white)}
+.topnav .spacer{flex:1}
+.topnav .src{font-size:11.5px;color:var(--muted)}
+.topnav .src b{color:var(--slate)}
+.pill{font-family:var(--font-cond);font-weight:600;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;border-radius:999px;border:1px solid var(--hairline);background:var(--white);color:var(--slate);cursor:pointer;transition:all .18s var(--ease)}
+.pill:hover{border-color:var(--ink)}
+.pill.on{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.sechead{display:flex;align-items:baseline;gap:14px;margin:24px 0 14px}
+.sechead h2{font-family:var(--font-display);font-weight:400;font-size:22px;text-transform:uppercase;letter-spacing:.01em}
+.sechead .rule{flex:1;height:3px;background:var(--spark-red)}
+.sechead .count{font-family:var(--font-cond);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.chip{font-family:var(--font-cond);font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1px solid;white-space:nowrap;display:inline-block}
+.chip.ok{color:var(--ok);background:var(--ok-bg);border-color:var(--ok-line)}
+.chip.warn{color:var(--warn);background:var(--warn-bg);border-color:var(--warn-line)}
+.chip.need{color:var(--need);background:var(--need-bg);border-color:var(--need-line)}
+.chip.info{color:var(--info);background:var(--info-bg);border-color:var(--info-line)}
+.chip.na{color:var(--na);background:var(--na-bg);border-color:var(--na-line)}
+footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--hairline);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{transition-duration:.01ms !important;animation-duration:.01ms !important}}
+
+.welcome{background:var(--charcoal);color:var(--white);padding:30px 34px;margin-bottom:30px;position:relative;overflow:hidden;box-shadow:var(--shadow-sm)}
+.welcome .wm{position:absolute;top:-14px;right:14px;opacity:.09;width:130px;height:158px}
+.welcome .kick{font-family:var(--font-cond);font-weight:600;font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.welcome h2{font-family:var(--font-display);font-weight:400;font-size:clamp(22px,3vw,32px);line-height:1.05;text-transform:uppercase;color:var(--white);max-width:30ch;margin-bottom:12px}
+.welcome h2 .y{color:var(--dream-yellow)}
+.welcome p{font-size:14px;color:rgba(255,255,255,.78);max-width:72ch;line-height:1.6}
+.sechead{margin-top:4px}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.opt{display:block;text-decoration:none;color:var(--ink);background:var(--white);border:1px solid var(--hairline);border-top:5px solid var(--spark-red);padding:26px 26px 22px;box-shadow:var(--shadow-sm);transition:transform .18s var(--ease),box-shadow .18s var(--ease)}
+.opt:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.opt .num{font-family:var(--font-display);font-size:15px;color:var(--muted);letter-spacing:.04em;margin-bottom:10px}
+.opt h3{font-family:var(--font-cond);font-weight:700;font-size:19px;text-transform:uppercase;letter-spacing:.02em;line-height:1.2;margin-bottom:10px}
+.opt p{font-size:13.5px;color:var(--slate);margin-bottom:16px;min-height:84px}
+.opt .go{font-family:var(--font-cond);font-weight:700;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--white);background:var(--spark-red);display:inline-block;padding:9px 20px;border-radius:999px;transition:background .18s var(--ease)}
+.opt:hover .go{background:var(--spark-red-press)}
+.opt.gold{border-top-color:var(--gold)}
+.opt.navy{border-top-color:var(--info)}
+.howto{margin-top:30px;background:var(--white);border:1px solid var(--hairline);border-left:4px solid var(--gold);padding:16px 20px;box-shadow:var(--shadow-sm)}
+.howto .lbl{font-family:var(--font-cond);font-weight:600;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--warn);margin-bottom:6px}
+.howto p{font-size:13px;color:var(--slate)}
+.howto b{color:var(--ink)}
+
+.wrap{max-width:1180px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <div class="lockup">
+      <svg class="flame" viewBox="0 0 46 54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M23 2C25 12 34 16 36 25c2 8-2 16-9 19 2-4 1-8-2-11-1 4-5 6-5 11 0 2 .6 3.6 1.6 5C14 47 8 40 8 31 8 19 21 14 23 2Z" fill="#E21C24"/>
+  <path d="M23 30c1.4 3.4 5 4.6 5 9 0 4-2.6 7-5 8-2.4-1-5-4-5-8 0-4.4 3.6-5.6 5-9Z" fill="#F7B23C"/>
+</svg>
+      <div>
+        <div class="kicker">Matchbook · Culture Operating System</div>
+        <h1>Culture <span class="red">Command Center</span></h1>
+      </div>
+    </div>
+    <div class="meta"><b>One workbook · three boards</b><br>Edit Matchbook_Culture_Data.xlsx — every view updates together.</div>
+  </header>
+  <nav class="topnav"><a href="./index.html" class="active">Command Center</a><a href="./launch_kit_dashboard.html">Launch Kit Dashboard</a><a href="./live_tracker.html">Live Tracker</a><a href="./culture_dashboard.html">Culture Macro Board</a><span class="spacer"></span><span class="src" id="srcNote">Loading data…</span>
+    <label class="pill" for="dataInput" style="cursor:pointer;margin-left:10px">Load Data</label>
+    <input id="dataInput" type="file" accept=".xlsx" hidden></nav>
+
+  <div class="welcome">
+    <svg class="wm" viewBox="0 0 46 54" fill="none" aria-hidden="true"><path d="M23 2C25 12 34 16 36 25c2 8-2 16-9 19 2-4 1-8-2-11-1 4-5 6-5 11 0 2 .6 3.6 1.6 5C14 47 8 40 8 31 8 19 21 14 23 2Z" fill="#fff"/></svg>
+    <div class="kick">Welcome, Culture Team</div>
+    <h2>Culture is the evidence of <span class="y">what we repeatedly do.</span></h2>
+    <p>This is our home base for the culture rollout. Everything here runs on one shared playbook, shown three different ways — pick the view that matches the work in front of you today. Every routine we teach, rehearse, and recognize is culture being built in real time. Let's build it on purpose.</p>
+  </div>
+
+  <div class="sechead"><h2>Choose Your View</h2><div class="rule"></div></div>
+
+  <div class="options">
+    <a class="opt" href="./launch_kit_dashboard.html">
+      <div class="num">VIEW 01</div>
+      <h3>Launch Kit Completion Dashboard</h3>
+      <p>The big picture. Pulls the readiness data for all 20 rollout folders and turns it into one answer: how close are we, what's left, and what have we already won. Open this when you have one minute and need to know where we stand.</p>
+      <span class="go">Open Dashboard →</span>
+    </a>
+    <a class="opt gold" href="./live_tracker.html">
+      <div class="num">VIEW 02</div>
+      <h3>Live Culture Tracker</h3>
+      <p>The work list. Pulls the same folder data but breaks each folder into its ten completion checks, with the evidence behind each one and the main gap named. Open this when you're deciding what to work on today.</p>
+      <span class="go">Open Tracker →</span>
+    </a>
+    <a class="opt navy" href="./culture_dashboard.html">
+      <div class="num">VIEW 03</div>
+      <h3>Culture Macro Board</h3>
+      <p>The component library. Every piece of our culture system — all 182 Culture Camp and adult-calibration components — laid out as cards. Click any card and the side panel opens its full detail: what it is, why it matters, the moves, and its build status. Open this when you want to see everything behind a component.</p>
+      <span class="go">Open Board →</span>
+    </a>
+  </div>
+
+  <div class="howto">
+    <div class="lbl">How updates flow</div>
+    <p>Edit <b>Matchbook_Culture_Data.xlsx</b> (Folders tab → dashboard &amp; tracker · Board_Cards tab → macro board), save it beside these pages, refresh. On the live site, re-upload the workbook only. If auto-load is blocked locally, click <b>Load Data</b> once on any page.</p>
+  </div>
+
+  <footer>
+    <span>Matchbook Learning · Culture Rollout — "Culture is the evidence of what we repeatedly do."</span>
+    <span>Single source of truth: Matchbook_Culture_Data.xlsx</span>
+  </footer>
+</div>
+<script>
+
+function rowsFromSheet(wb,name){
+  const ws=wb.Sheets[name];
+  return ws?XLSX.utils.sheet_to_json(ws,{defval:''}):[];
+}
+function parseWB(buf,type,src){
+  if(type==='array')buf=new Uint8Array(buf);
+  const wb=XLSX.read(buf,{type:type});
+  const folders=rowsFromSheet(wb,'Folders');
+  const cards=rowsFromSheet(wb,'Board_Cards');
+  if(!folders.length&&!cards.length)throw new Error('No usable sheets');
+  return {folders,cards,source:src};
+}
+function setSrc(html){const el=document.getElementById('srcNote');if(el)el.innerHTML=html;}
+async function loadData(){
+  if(typeof XLSX!=='undefined'){
+    try{
+      const r=await fetch('./Matchbook_Culture_Data.xlsx',{cache:'no-store'});
+      if(r.ok){
+        const d=parseWB(await r.arrayBuffer(),'array','workbook · auto-loaded');
+        setSrc('Source: <b>Matchbook_Culture_Data.xlsx</b> · live');
+        return d;
+      }
+    }catch(_){}
+    try{
+      const b64=localStorage.getItem('matchbook_xlsx');
+      if(b64){
+        const d=parseWB(b64,'base64','workbook · saved');
+        setSrc('Source: <b>saved workbook</b> in this browser');
+        return d;
+      }
+    }catch(_){}
+  }
+  setSrc('Source: <b>embedded snapshot</b> · use Load Data to refresh');
+  return {folders:(typeof EMB_FOLDERS!=='undefined'?EMB_FOLDERS:[]),cards:(typeof EMB_CARDS!=='undefined'?EMB_CARDS:[]),source:'embedded'};
+}
+(function(){
+  const inp=document.getElementById('dataInput');
+  if(!inp)return;
+  inp.addEventListener('change',async e=>{
+    const f=e.target.files[0]; if(!f)return;
+    try{
+      const buf=await f.arrayBuffer();
+      const d=parseWB(buf,'array',f.name);
+      try{
+        let bin='';const bytes=new Uint8Array(buf);
+        for(let i=0;i<bytes.length;i+=0x8000)bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+0x8000));
+        localStorage.setItem('matchbook_xlsx',btoa(bin));
+      }catch(_){}
+      setSrc('Source: <b>'+f.name+'</b> · saved for next visit');
+      onData(d);
+    }catch(err){alert('Could not read that workbook: '+err.message);}
+  });
+})();
+function onData(d){}
+loadData().then(onData);
+</script>
+</body>
+</html>
