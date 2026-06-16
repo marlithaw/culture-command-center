@@ -188,22 +188,32 @@ async function loadData(){
     try{
       const r=await fetch('./Matchbook_Culture_Data.xlsx',{cache:'no-store'});
       if(r.ok){
-        const d=parseWB(await r.arrayBuffer(),'array','workbook · auto-loaded');
-        setSrc('Source: <b>Matchbook_Culture_Data.xlsx</b> · live');
+        const d=parseWB(await r.arrayBuffer(),'array','workbook - auto-loaded');
+        setSrc('Source: <b>Matchbook_Culture_Data.xlsx</b> - live');
         return d;
       }
     }catch(_){}
+  }
+
+  const embeddedFolders=(typeof EMB_FOLDERS!=='undefined'?EMB_FOLDERS:[]);
+  const embeddedCards=(typeof EMB_CARDS!=='undefined'?EMB_CARDS:[]);
+  if(embeddedFolders.length||embeddedCards.length){
+    setSrc('Source: <b>embedded snapshot</b> - synced from Matchbook_Culture_Data.xlsx');
+    return {folders:embeddedFolders,cards:embeddedCards,source:'embedded'};
+  }
+
+  if(typeof XLSX!=='undefined'){
     try{
       const b64=localStorage.getItem('matchbook_xlsx');
       if(b64){
-        const d=parseWB(b64,'base64','workbook · saved');
+        const d=parseWB(b64,'base64','workbook - saved');
         setSrc('Source: <b>saved workbook</b> in this browser');
         return d;
       }
     }catch(_){}
   }
-  setSrc('Source: <b>embedded snapshot</b> · use Load Data to refresh');
-  return {folders:(typeof EMB_FOLDERS!=='undefined'?EMB_FOLDERS:[]),cards:(typeof EMB_CARDS!=='undefined'?EMB_CARDS:[]),source:'embedded'};
+  setSrc('Source: <b>no embedded data</b> - use Load Data to refresh');
+  return {folders:[],cards:[],source:'empty'};
 }
 (function(){
   const inp=document.getElementById('dataInput');

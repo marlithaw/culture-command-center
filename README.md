@@ -15,6 +15,12 @@ One workbook. Three boards. One design system. Open **index.html** to start.
 - **Board_Cards tab** → drives the Macro Board
   (status: Built / Partial / Needs build · res_* columns: Built / Partial / Need / Yes · all detail text feeds the side panel)
 
+## Rubric governance
+- The Matchbook SRR Teacher Rubric is the formal rubric used by crosswalks, observation records, dashboards, and reports.
+- The Matchbook Coach Rubric supports calibration and rehearsal; it does not create a separate score.
+- Get Better Faster is action-step guidance for coaching interventions; it is not a Matchbook rating source.
+- R3xBP is protected framework IP used to construct Matchbook materials; it is not the formal reporting rubric.
+
 Edit the workbook, save it beside the HTML files, refresh — every view updates together.
 On the live site, re-upload only the workbook to update everything.
 
@@ -26,4 +32,5 @@ Upload index.html, the three board pages, and Matchbook_Culture_Data.xlsx to the
 
 ## Legacy files
 `matchbook_tracker_data.csv`, `matchbook-system.css`, `culture-dashboard-enhancements.js`,
-and `design-qa.md` are superseded by this bundle and safe to delete.
+and `design-qa.md` are superseded by this bundle. The root `Matchbook_Culture_Hub.html`
+is also legacy and is not part of the Culture Command Center deployment.
